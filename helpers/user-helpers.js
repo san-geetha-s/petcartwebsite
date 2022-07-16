@@ -1,6 +1,6 @@
 var db = require('../config/connection')
 var collection = require('../config/collections')
-const bcrypt = require('bcrypt')
+const bcryptjs = require('bcryptjs')
 const { response } = require('express')
 const { CART_COLLECTION } = require('../config/collections')
 // const { Collection } = require('mongoose')
@@ -18,7 +18,7 @@ var instance = new Razorpay({
 module.exports={
     doSignup:function(userData){
         return new Promise(async function(resolve,reject){
-            userData.Password=await bcrypt.hash(userData.Password,10)
+            userData.Password=await bcryptjs.hash(userData.Password,10)
             db.get().collection(collection.USER_COLLECTION).insertOne(userData).then((data)=>{
               resolve(data.insertedId)  
             })
@@ -32,7 +32,7 @@ module.exports={
             let response={};
             let user=await db.get().collection(collection.USER_COLLECTION).findOne({Email:userData.Email})
             if(user){
-                bcrypt.compare(userData.Password,user.Password).then((status)=>{
+                bcryptjs.compare(userData.Password,user.Password).then((status)=>{
                     if(status){
                         console.log("Login Success");
                         response.user=user;
